@@ -22,47 +22,66 @@ import jakarta.validation.Valid;
 @RestController
 public class Controller {
 
-        @Autowired
-        private DBService service;
+    @Autowired
+    private DBService service;
 
-        @GetMapping(value = "/v1/content")
-        public ResponseEntity<String> getContent(@RequestParam(name = "content_id") String contentId) {
-                Data response = service.getContent(contentId);
+    @GetMapping(value = "/v1/content")
+    public ResponseEntity<String> getContent(@RequestParam(name = "content_id") String contentId) {
+        Data response = service.getContent(contentId);
 
-                if (!response.getContentMessage().isEmpty()) {
-                        return ResponseEntity.status(HttpStatus.OK)
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .body(response.getContentMessage());
-                } else {
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                                        .contentType(MediaType.APPLICATION_JSON)
-                                        .body("Content not found");
-                }
+        if (response != null) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response.getContentMessage());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Content not found");
         }
+    }
 
-        @PostMapping(value = "/v1/content")
-        public ResponseEntity<String> insertContent(@RequestBody @Valid Request request) {
-                service.insertContent(request);
+    @PostMapping(value = "/v1/content")
+    public ResponseEntity<String> insertContent(@RequestBody @Valid Request request) {
+        boolean isSuccess = service.insertContent(request);
 
-                return ResponseEntity.status(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body("Success");
+        if (isSuccess) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Success");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Failed");
         }
+    }
 
-        @PutMapping(value = "/v1/content/{id}")
-        public ResponseEntity<String> updateContent(@PathVariable String id, @RequestBody @Valid Request request) {
-                service.updateContent(id, request);
-                return ResponseEntity.status(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body("Success");
+    @PutMapping(value = "/v1/content/{id}")
+    public ResponseEntity<String> updateContent(@PathVariable String id, @RequestBody @Valid Request request) {
+        boolean isSuccess = service.updateContent(id, request);
+
+        if (isSuccess) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Success");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Failed");
         }
+    }
 
-        @DeleteMapping(value = "/v1/content/{id}")
-        public ResponseEntity<String> deleteContent(@PathVariable String id) {
-                service.deleteContent(id);
+    @DeleteMapping(value = "/v1/content/{id}")
+    public ResponseEntity<String> deleteContent(@PathVariable String id) {
+        boolean isSuccess = service.deleteContent(id);
 
-                return ResponseEntity.status(HttpStatus.OK)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body("Success");
+        if (isSuccess) {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Success");
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body("Failed");
         }
+    }
 }

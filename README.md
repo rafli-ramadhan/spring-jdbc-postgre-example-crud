@@ -1,6 +1,6 @@
 # Spring-jdbc-postgre-example-crud
 
-### Database table sql
+### Database query
 
 ```
 CREATE TABLE content (
